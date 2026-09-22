@@ -6,15 +6,19 @@ public class CowBehavior : MonoBehaviour
     // Movement speed used while the cow is walking.
     public float moveSpeed = 1f;
 
+    // Minimum and maximum duration of each walking period.
     public float minMoveTime = 1f;
     public float maxMoveTime = 4f;
 
+    // Minimum and maximum duration of each idle period.
     public float minIdleTime = 1f;
     public float maxIdleTime = 3f;
 
+    // Minimum and maximum duration of each sleeping period.
     public float minSleepTime = 3f;
     public float maxSleepTime = 6f;
 
+    // Chance of choosing sleep when the cow selects a new action.
     [Range(0f, 1f)]
     public float sleepChance = 0.1f;
 
@@ -40,6 +44,7 @@ public class CowBehavior : MonoBehaviour
         Sleeping
     }
 
+    // Used to keep the cow's idle and sleep poses facing the right way.
     enum FacingDirection
     {
         Up,
@@ -69,9 +74,9 @@ public class CowBehavior : MonoBehaviour
             switch (currentState)
             {
                 case CowState.Walking:
-                // After walking, the cow may sleep or idle.
-                ChooseAfterWalking();
-                break;
+                    // After walking, the cow may sleep or idle.
+                    ChooseAfterWalking();
+                    break;
 
                 case CowState.Idle:
                     // Idle time is over; choose the next action.
@@ -207,16 +212,53 @@ public class CowBehavior : MonoBehaviour
     }
 
     void ChooseAfterWalking()
-{
-    float randomValue = Random.value;
+    {
+        // Walking can lead directly to sleep or return to the idle state.
+        float randomValue = Random.value;
 
-    if (randomValue < sleepChance)
-    {
-        StartSleeping();
+        if (randomValue < sleepChance)
+        {
+            StartSleeping();
+        }
+        else
+        {
+            StartIdle();
+        }
     }
-    else
+
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        StartIdle();
+        if (currentState == CowState.Walking)
+        {
+            // Reverse direction and restart the walking timer when blocked.
+            moveDirection = -moveDirection;
+            stateTimer = Random.Range(minMoveTime, maxMoveTime);
+
+            // Refresh the animation and sprite flip to match the new direction.
+            if (moveDirection == Vector2.up)
+            {
+                facingDirection = FacingDirection.Up;
+                animator.Play("Cow_Walk_Up");
+                spriteRenderer.flipX = false;
+            }
+            else if (moveDirection == Vector2.down)
+            {
+                facingDirection = FacingDirection.Down;
+                animator.Play("Cow_Walk_Down");
+                spriteRenderer.flipX = false;
+            }
+            else if (moveDirection == Vector2.left)
+            {
+                facingDirection = FacingDirection.Left;
+                animator.Play("Cow_Walk_Left");
+                spriteRenderer.flipX = false;
+            }
+            else if (moveDirection == Vector2.right)
+            {
+                facingDirection = FacingDirection.Right;
+                animator.Play("Cow_Walk_Left");
+                spriteRenderer.flipX = true;
+            }
+        }
     }
-}
 }
