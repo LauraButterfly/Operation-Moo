@@ -36,6 +36,8 @@ public class CowBehavior : MonoBehaviour
     // Last facing direction used for animation and sleep pose.
     private FacingDirection facingDirection = FacingDirection.Down;
 
+    private bool isBeingAbducted = false;
+
     // Simple behavior states for the cow AI.
     enum CowState
     {
@@ -66,6 +68,10 @@ public class CowBehavior : MonoBehaviour
 
     void Update()
     {
+        // Stop normal AI updates while the cow is being abducted by the tractor beam.
+        if (isBeingAbducted)
+            return;
+
         // Count down until the current behavior should end.
         stateTimer -= Time.deltaTime;
 
@@ -93,6 +99,13 @@ public class CowBehavior : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Freeze the cow immediately when the tractor beam begins abducting it.
+        if (isBeingAbducted)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         // Apply movement only while the cow is walking.
         if (currentState == CowState.Walking)
         {
@@ -106,7 +119,8 @@ public class CowBehavior : MonoBehaviour
 
     void ChooseNextAction()
     {
-        // Randomly choose whether the cow should sleep or walk next.
+        // When the cow finishes an idle period, choose a new behavior.
+        // It will either rest or start wandering again.
         float randomValue = Random.value;
 
         if (randomValue < sleepChance)
@@ -121,7 +135,7 @@ public class CowBehavior : MonoBehaviour
 
     void StartIdle()
     {
-        // Pause in place and wait for the next action.
+        // The cow pauses in place and waits before selecting its next action.
         currentState = CowState.Idle;
         stateTimer = Random.Range(minIdleTime, maxIdleTime);
 
@@ -130,7 +144,7 @@ public class CowBehavior : MonoBehaviour
 
     void StartWalking()
     {
-        // Pick a random direction and begin moving.
+        // Choose a random direction and begin moving in that direction.
         currentState = CowState.Walking;
         stateTimer = Random.Range(minMoveTime, maxMoveTime);
 
@@ -170,7 +184,7 @@ public class CowBehavior : MonoBehaviour
 
     void StartSleeping()
     {
-        // Enter the sleep state and choose the correct sleeping animation.
+        // Enter the sleep state and play the matching sleep animation based on facing direction.
         currentState = CowState.Sleeping;
         stateTimer = Random.Range(minSleepTime, maxSleepTime);
 
@@ -193,7 +207,7 @@ public class CowBehavior : MonoBehaviour
 
     void PlayIdleAnimation()
     {
-        // Use the last facing direction to play the correct idle pose.
+        // Choose the correct idle pose using the cow's last facing direction.
         if (facingDirection == FacingDirection.Left)
         {
             spriteRenderer.flipX = false;
@@ -213,7 +227,7 @@ public class CowBehavior : MonoBehaviour
 
     void ChooseAfterWalking()
     {
-        // Walking can lead directly to sleep or return to the idle state.
+        // Once walking ends, the cow may sleep or simply stop and idle again.
         float randomValue = Random.value;
 
         if (randomValue < sleepChance)
@@ -228,11 +242,16 @@ public class CowBehavior : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        // If the cow is being abducted, ignore collision changes so it can continue moving toward the beam.
+        if (isBeingAbducted)
+            return;
+
+        // If the cow is walking and hits something, reverse direction so it keeps roaming around the area.
         if (currentState == CowState.Walking)
         {
-            // Reverse direction and restart the walking timer when blocked.
             moveDirection = -moveDirection;
             stateTimer = Random.Range(minMoveTime, maxMoveTime);
+
 
             // Refresh the animation and sprite flip to match the new direction.
             if (moveDirection == Vector2.up)
@@ -260,5 +279,30 @@ public class CowBehavior : MonoBehaviour
                 spriteRenderer.flipX = true;
             }
         }
+    }
+
+
+    public void StartAbduction()
+    {
+        // Freeze the cow in place and pause its animation when the tractor beam starts pulling it.
+        isBeingAbducted = true;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        rb.bodyType = RigidbodyType2D.Kinematic;
+
+        animator.speed = 0f;
+    }
+
+    public void StopAbduction()
+    {
+        // Return the cow to normal movement and AI behavior when the abduction ends.
+        isBeingAbducted = false;
+
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        animator.speed = 1f;
+
+        StartIdle();
     }
 }
