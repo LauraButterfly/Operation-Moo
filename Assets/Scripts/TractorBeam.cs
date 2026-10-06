@@ -89,15 +89,15 @@ public class TractorBeam : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other)
-{
-    CowBehavior cow = other.GetComponent<CowBehavior>();
-
-    if (cow != null)
     {
-        cowInBeam = cow;
-        Debug.Log("Cow entered beam area!");
+        CowBehavior cow = other.GetComponent<CowBehavior>();
+
+        if (cow != null)
+        {
+            cowInBeam = cow;
+            Debug.Log("Cow entered beam area!");
+        }
     }
-}
 
     void OnTriggerExit2D(Collider2D other)
     {
@@ -173,5 +173,13 @@ public class TractorBeam : MonoBehaviour
         }
 
         cowInBeam = null;
+    }
+
+    public void CancelAbductionForGameOver()
+    {
+        minigameActive = false;
+        isAbducting = false;
+
+        beamVisual.SetActive(false);
     }
 }
