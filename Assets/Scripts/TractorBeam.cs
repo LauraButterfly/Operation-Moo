@@ -9,6 +9,8 @@ public class TractorBeam : MonoBehaviour
     // Visual effect that is enabled while the beam is active.
     public GameObject beamVisual;
 
+    public AbductionMinigame minigame;
+
     // The final destination the cow is pulled toward.
     public Transform abductionTarget;
 
@@ -30,14 +32,17 @@ public class TractorBeam : MonoBehaviour
     // Distance from the cow to the target when the abduction begins.
     private float abductionStartDistance;
 
+    private bool minigameActive = false;
+
     void Update()
     {
         // Ignore input if the keyboard system is not available.
         if (Keyboard.current == null)
             return;
 
-        // Pressing Space starts the abduction if a cow is in range.
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+
+        // Pressing E starts the abduction if a cow is in range.
+        if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             ActivateBeam();
         }
@@ -84,52 +89,43 @@ public class TractorBeam : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other)
-    {
-        // Check whether the object entering the trigger is a cow.
-        CowBehavior cow = other.GetComponent<CowBehavior>();
+{
+    CowBehavior cow = other.GetComponent<CowBehavior>();
 
-        if (cow != null)
-        {
-            // Store the cow so the beam knows what to abduct.
-            cowInBeam = cow;
-            Debug.Log("Cow entered beam area!");
-        }
+    if (cow != null)
+    {
+        cowInBeam = cow;
+        Debug.Log("Cow entered beam area!");
     }
+}
 
     void OnTriggerExit2D(Collider2D other)
     {
-        // If the cow leaves the beam, it is no longer the active target.
         CowBehavior cow = other.GetComponent<CowBehavior>();
 
         if (cow != null && cow == cowInBeam)
         {
-            cowInBeam = null;
+            // Keep the cow locked as the target while the
+            // minigame or abduction is in progress.
+            if (!minigameActive && !isAbducting)
+            {
+                cowInBeam = null;
+            }
         }
     }
 
     void ActivateBeam()
     {
-        // Only start if a cow is present and the beam is not already active.
-        if (cowInBeam != null && !isAbducting)
+        if (cowInBeam != null && !isAbducting && !minigameActive)
         {
-            isAbducting = true;
-
-            // Enable the beam effect while the cow is being pulled in.
             beamVisual.SetActive(true);
 
-            // Save the cow's current size before shrinking it.
             originalCowScale = cowInBeam.transform.localScale;
 
-            // Record the starting distance so the shrink animation can be based on progress.
-            abductionStartDistance = Vector2.Distance(
-                cowInBeam.transform.position,
-                abductionTarget.position
-            );
-
-            // Tell the cow script that the abduction sequence has started.
             cowInBeam.StartAbduction();
 
-            Debug.Log("Starting cow abduction!");
+            minigameActive = true;
+            minigame.StartMinigame();
         }
     }
 
@@ -145,5 +141,37 @@ public class TractorBeam : MonoBehaviour
         isAbducting = false;
 
         beamVisual.SetActive(false);
+    }
+
+    public void MinigameSuccess()
+    {
+        minigameActive = false;
+
+        if (cowInBeam == null)
+        {
+            Debug.LogError("Minigame succeeded, but there is no cow assigned!");
+            return;
+        }
+
+        abductionStartDistance = Vector2.Distance(
+            cowInBeam.transform.position,
+            abductionTarget.position
+        );
+
+        isAbducting = true;
+    }
+
+    public void MinigameFailed()
+    {
+        minigameActive = false;
+
+        beamVisual.SetActive(false);
+
+        if (cowInBeam != null)
+        {
+            cowInBeam.StopAbduction();
+        }
+
+        cowInBeam = null;
     }
 }
