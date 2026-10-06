@@ -7,6 +7,11 @@ public class ScoreManager : MonoBehaviour
 
     private int score = 0;
 
+    public int CurrentScore
+    {
+        get { return score; }
+    }
+
     void Start()
     {
         UpdateScoreText();

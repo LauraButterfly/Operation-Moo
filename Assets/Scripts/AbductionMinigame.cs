@@ -159,4 +159,10 @@ public class AbductionMinigame : MonoBehaviour
         return markerX >= leftEdge &&
                markerX <= rightEdge;
     }
+
+    public void CancelMinigame()
+    {
+        isRunning = false;
+        gameObject.SetActive(false);
+    }
 }

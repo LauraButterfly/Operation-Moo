@@ -5,6 +5,8 @@ public class GameTimer : MonoBehaviour
 {
     public TMP_Text timerText;
 
+    public GameOverManager gameOverManager;
+
     public float gameTime = 60f;
 
     private float timeRemaining;
@@ -44,5 +46,7 @@ public class GameTimer : MonoBehaviour
     void GameOver()
     {
         Debug.Log("Time's up!");
+
+        gameOverManager.ShowGameOver();
     }
 }
