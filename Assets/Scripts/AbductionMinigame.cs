@@ -22,14 +22,37 @@ public class AbductionMinigame : MonoBehaviour
         isRunning = true;
         markerTime = 0f;
 
-        float leftBound = -bar.rect.width / 2f;
+        // Reset marker to the far left side of the bar.
+        float halfBarWidth = bar.rect.width / 2f;
 
         marker.anchoredPosition = new Vector2(
-            leftBound,
+            -halfBarWidth,
             marker.anchoredPosition.y
         );
-    }
 
+        // Get half the width of the orange target area.
+        // We use the orange zone because it is the larger zone.
+        float halfOrangeWidth = orangeZone.rect.width / 2f;
+
+        // Pick a random X position while keeping the entire orange zone
+        // inside the bar.
+        float randomX = Random.Range(
+            -halfBarWidth + halfOrangeWidth,
+            halfBarWidth - halfOrangeWidth
+        );
+
+        // Move the orange and green zones to the same random position.
+        orangeZone.anchoredPosition = new Vector2(
+            randomX,
+            orangeZone.anchoredPosition.y
+        );
+
+        greenZone.anchoredPosition = new Vector2(
+            randomX,
+            greenZone.anchoredPosition.y
+        );
+    }
+    
     public void EndMinigame()
     {
         isRunning = false;
