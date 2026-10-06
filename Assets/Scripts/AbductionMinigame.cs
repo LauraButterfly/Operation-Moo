@@ -13,17 +13,19 @@ public class AbductionMinigame : MonoBehaviour
     public float markerSpeed = 400f;
 
     private bool isRunning;
-    private int direction = 1;
+    private float markerTime = 0f;
 
     public void StartMinigame()
     {
         gameObject.SetActive(true);
 
         isRunning = true;
-        direction = 1;
+        markerTime = 0f;
+
+        float leftBound = -bar.rect.width / 2f;
 
         marker.anchoredPosition = new Vector2(
-            -bar.rect.width / 2f,
+            leftBound,
             marker.anchoredPosition.y
         );
     }
@@ -38,8 +40,6 @@ public class AbductionMinigame : MonoBehaviour
     {
         if (!isRunning)
             return;
-
-        Debug.Log("Minigame running");
 
         MoveMarker();
 
@@ -58,48 +58,55 @@ public class AbductionMinigame : MonoBehaviour
     }
 
     void MoveMarker()
-{
-    Vector2 position = marker.anchoredPosition;
-
-    position.x += direction * markerSpeed * Time.unscaledDeltaTime;
-
-    float halfBarWidth = bar.rect.width / 2f;
-
-    if (position.x >= halfBarWidth)
     {
-        position.x = halfBarWidth;
-        direction = -1;
-    }
-    else if (position.x <= -halfBarWidth)
-    {
-        position.x = -halfBarWidth;
-        direction = 1;
-    }
+        float halfBarWidth = bar.rect.width / 2f;
 
-    marker.anchoredPosition = position;
-}
+        float leftBound = -halfBarWidth;
+        float rightBound = halfBarWidth;
+
+        markerTime +=
+            Time.unscaledDeltaTime *
+            markerSpeed /
+            bar.rect.width;
+
+        // Moves from 0 -> 1 -> 0 -> 1 continuously.
+        float t = Mathf.PingPong(markerTime, 1f);
+
+        // Converts that 0-1 value into a position across the bar.
+        float xPosition = Mathf.Lerp(
+            leftBound,
+            rightBound,
+            t
+        );
+
+        marker.anchoredPosition = new Vector2(
+            xPosition,
+            marker.anchoredPosition.y
+        );
+    }
 
     void CheckResult()
     {
+        // Stop the marker immediately after one click.
         isRunning = false;
 
         if (IsMarkerInside(greenZone))
         {
-            Debug.Log("PERFECT!");
+            Debug.Log("PERFECT - GREEN");
 
             EndMinigame();
             tractorBeam.MinigameSuccess();
         }
         else if (IsMarkerInside(orangeZone))
         {
-            Debug.Log("GOOD!");
+            Debug.Log("GOOD - ORANGE");
 
             EndMinigame();
             tractorBeam.MinigameSuccess();
         }
         else
         {
-            Debug.Log("MISS!");
+            Debug.Log("MISS - OUTSIDE TARGET");
 
             EndMinigame();
             tractorBeam.MinigameFailed();
@@ -108,13 +115,13 @@ public class AbductionMinigame : MonoBehaviour
 
     bool IsMarkerInside(RectTransform zone)
     {
-        float markerX = marker.anchoredPosition.x;
+        Vector3[] corners = new Vector3[4];
+        zone.GetWorldCorners(corners);
 
-        float zoneCenter = zone.anchoredPosition.x;
-        float halfZoneWidth = zone.rect.width / 2f;
+        float leftEdge = corners[0].x;
+        float rightEdge = corners[2].x;
 
-        float leftEdge = zoneCenter - halfZoneWidth;
-        float rightEdge = zoneCenter + halfZoneWidth;
+        float markerX = marker.position.x;
 
         return markerX >= leftEdge && markerX <= rightEdge;
     }
