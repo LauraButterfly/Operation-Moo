@@ -23,26 +23,27 @@ public class AbductionMinigame : MonoBehaviour
         isRunning = true;
         markerTime = 0f;
 
-        // Get the width of the full bar.
+        // Get half of the full bar width.
         float halfBarWidth = bar.rect.width / 2f;
 
-        // Reset the marker to the far left.
+        // Reset marker to the far left.
         marker.anchoredPosition = new Vector2(
             -halfBarWidth,
             marker.anchoredPosition.y
         );
 
-        // Use the orange zone because it is the larger target area.
-        float halfOrangeWidth = orangeZone.rect.width / 2f;
+        // Use the orange zone because it is the larger target.
+        float halfOrangeWidth =
+            orangeZone.rect.width / 2f;
 
-        // Pick a random position while keeping the whole orange zone
-        // inside the bar.
+        // Choose a random target location while keeping the
+        // entire orange zone inside the bar.
         float randomX = Random.Range(
             -halfBarWidth + halfOrangeWidth,
             halfBarWidth - halfOrangeWidth
         );
 
-        // Move the orange and green zones together.
+        // Move both target zones together.
         orangeZone.anchoredPosition = new Vector2(
             randomX,
             orangeZone.anchoredPosition.y
@@ -83,7 +84,8 @@ public class AbductionMinigame : MonoBehaviour
 
     void MoveMarker()
     {
-        float halfBarWidth = bar.rect.width / 2f;
+        float halfBarWidth =
+            bar.rect.width / 2f;
 
         float leftBound = -halfBarWidth;
         float rightBound = halfBarWidth;
@@ -93,11 +95,12 @@ public class AbductionMinigame : MonoBehaviour
             markerSpeed /
             bar.rect.width;
 
-        // Produces a repeating value:
+        // Creates:
         // 0 -> 1 -> 0 -> 1...
-        float t = Mathf.PingPong(markerTime, 1f);
+        float t =
+            Mathf.PingPong(markerTime, 1f);
 
-        // Move smoothly from the left side to the right side.
+        // Smoothly moves between the left and right edges.
         float xPosition = Mathf.Lerp(
             leftBound,
             rightBound,
@@ -112,14 +115,13 @@ public class AbductionMinigame : MonoBehaviour
 
     void CheckResult()
     {
-        // Stop accepting input immediately.
+        // Only allow one attempt.
         isRunning = false;
 
         if (IsMarkerInside(greenZone))
         {
             Debug.Log("PERFECT - GREEN");
 
-            // Full points for green.
             scoreManager.AddScore(100);
 
             EndMinigame();
@@ -129,7 +131,6 @@ public class AbductionMinigame : MonoBehaviour
         {
             Debug.Log("GOOD - ORANGE");
 
-            // Reduced points for orange.
             scoreManager.AddScore(50);
 
             EndMinigame();
@@ -139,7 +140,6 @@ public class AbductionMinigame : MonoBehaviour
         {
             Debug.Log("MISS - OUTSIDE TARGET");
 
-            // No points for a miss.
             EndMinigame();
             tractorBeam.MinigameFailed();
         }
@@ -147,8 +147,8 @@ public class AbductionMinigame : MonoBehaviour
 
     bool IsMarkerInside(RectTransform zone)
     {
-        // Get the actual visible world-space corners of the zone.
         Vector3[] corners = new Vector3[4];
+
         zone.GetWorldCorners(corners);
 
         float leftEdge = corners[0].x;
