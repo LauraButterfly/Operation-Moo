@@ -1,47 +1,51 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// This script controls the UFO tractor beam effect.
-// When a cow enters the trigger zone and the player presses Space,
-// the cow is pulled toward an abduction target, shrinks, and is then destroyed.
+// Controls the UFO tractor beam.
+// Press E while a cow is inside the beam area to start the minigame.
+// If the player succeeds, the cow is pulled into the UFO and shrinks.
+// The UFO stays locked until the whole abduction sequence is finished.
 public class TractorBeam : MonoBehaviour
 {
-    // Visual effect that is enabled while the beam is active.
+    // Visual effect shown while the beam is active.
     public GameObject beamVisual;
 
+    // Reference to the abduction minigame.
     public AbductionMinigame minigame;
 
-    // The final destination the cow is pulled toward.
+    // Reference to the UFO movement script.
+    public UfoMovement ufoMovement;
+
+    // Final point the cow moves toward.
     public Transform abductionTarget;
 
-    // How fast the cow moves toward the target.
+    // How fast the cow moves toward the UFO.
     public float abductionSpeed = 2f;
 
-    // How much the cow shrinks while being abducted.
+    // Final size multiplier of the cow during abduction.
     public float shrinkAmount = 0.5f;
 
-    // Stores the cow's original scale so it can be smoothly reduced during the beam.
+    // Stores the cow's original scale.
     private Vector3 originalCowScale;
 
-    // Tracks whether the beam is currently pulling a cow.
+    // True while the cow is physically being pulled into the UFO.
     private bool isAbducting = false;
 
-    // Reference to the current cow being abducted.
+    // Cow currently selected by the beam.
     private CowBehavior cowInBeam;
 
-    // Distance from the cow to the target when the abduction begins.
+    // Starting distance used for calculating shrink progress.
     private float abductionStartDistance;
 
+    // True while the timing minigame is active.
     private bool minigameActive = false;
 
     void Update()
     {
-        // Ignore input if the keyboard system is not available.
         if (Keyboard.current == null)
             return;
 
-
-        // Pressing E starts the abduction if a cow is in range.
+        // E activates the tractor beam.
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             ActivateBeam();
@@ -50,30 +54,30 @@ public class TractorBeam : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Only update movement while an abduction is active and a valid cow exists.
+        // Only move the cow after the player succeeds at the minigame.
         if (!isAbducting || cowInBeam == null)
             return;
 
-        // Move the cow steadily toward the abduction target.
+        // Move the cow toward the UFO.
         cowInBeam.transform.position = Vector3.MoveTowards(
             cowInBeam.transform.position,
             abductionTarget.position,
             abductionSpeed * Time.fixedDeltaTime
         );
 
-        // Measure how close the cow is to the target.
         float distance = Vector2.Distance(
             cowInBeam.transform.position,
             abductionTarget.position
         );
 
-        // progress goes from 0 to 1 as the cow nears the target.
+        // Goes from 0 to 1 as the cow approaches the UFO.
         float progress = 1f - Mathf.Clamp01(
             distance / abductionStartDistance
         );
 
-        // The cow shrinks from its original size toward the target size.
-        Vector3 targetScale = originalCowScale * shrinkAmount;
+        // Shrink the cow during the abduction.
+        Vector3 targetScale =
+            originalCowScale * shrinkAmount;
 
         cowInBeam.transform.localScale = Vector3.Lerp(
             originalCowScale,
@@ -81,7 +85,7 @@ public class TractorBeam : MonoBehaviour
             progress
         );
 
-        // When the cow gets very close, finish the abduction.
+        // Finish when the cow reaches the UFO.
         if (distance < 0.1f)
         {
             CompleteAbduction();
@@ -90,7 +94,8 @@ public class TractorBeam : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        CowBehavior cow = other.GetComponent<CowBehavior>();
+        CowBehavior cow =
+            other.GetComponent<CowBehavior>();
 
         if (cow != null)
         {
@@ -101,12 +106,13 @@ public class TractorBeam : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other)
     {
-        CowBehavior cow = other.GetComponent<CowBehavior>();
+        CowBehavior cow =
+            other.GetComponent<CowBehavior>();
 
         if (cow != null && cow == cowInBeam)
         {
-            // Keep the cow locked as the target while the
-            // minigame or abduction is in progress.
+            // Keep the cow selected while the minigame
+            // or abduction animation is active.
             if (!minigameActive && !isAbducting)
             {
                 cowInBeam = null;
@@ -116,31 +122,28 @@ public class TractorBeam : MonoBehaviour
 
     void ActivateBeam()
     {
-        if (cowInBeam != null && !isAbducting && !minigameActive)
+        if (cowInBeam != null &&
+            !isAbducting &&
+            !minigameActive)
         {
+            // Lock UFO movement immediately.
+            if (ufoMovement != null)
+            {
+                ufoMovement.LockMovement();
+            }
+
             beamVisual.SetActive(true);
 
-            originalCowScale = cowInBeam.transform.localScale;
+            originalCowScale =
+                cowInBeam.transform.localScale;
 
+            // Freeze the cow.
             cowInBeam.StartAbduction();
 
+            // Start the minigame.
             minigameActive = true;
             minigame.StartMinigame();
         }
-    }
-
-    void CompleteAbduction()
-    {
-        Debug.Log("Cow successfully abducted!");
-
-        // Remove the cow object from the scene once it reaches the target.
-        Destroy(cowInBeam.gameObject);
-
-        // Reset all state so the beam is ready for the next cow.
-        cowInBeam = null;
-        isAbducting = false;
-
-        beamVisual.SetActive(false);
     }
 
     public void MinigameSuccess()
@@ -149,7 +152,16 @@ public class TractorBeam : MonoBehaviour
 
         if (cowInBeam == null)
         {
-            Debug.LogError("Minigame succeeded, but there is no cow assigned!");
+            Debug.LogError(
+                "Minigame succeeded, but there is no cow assigned!"
+            );
+
+            // Safety fallback.
+            if (ufoMovement != null)
+            {
+                ufoMovement.UnlockMovement();
+            }
+
             return;
         }
 
@@ -158,7 +170,11 @@ public class TractorBeam : MonoBehaviour
             abductionTarget.position
         );
 
+        // Start the physical abduction.
         isAbducting = true;
+
+        // Do NOT unlock UFO movement here.
+        // It stays locked until CompleteAbduction().
     }
 
     public void MinigameFailed()
@@ -173,6 +189,31 @@ public class TractorBeam : MonoBehaviour
         }
 
         cowInBeam = null;
+
+        // Failure ends the sequence, so movement can resume.
+        if (ufoMovement != null)
+        {
+            ufoMovement.UnlockMovement();
+        }
+    }
+
+    void CompleteAbduction()
+    {
+        Debug.Log("Cow successfully abducted!");
+
+        // Remove the cow once it reaches the UFO.
+        Destroy(cowInBeam.gameObject);
+
+        cowInBeam = null;
+        isAbducting = false;
+
+        beamVisual.SetActive(false);
+
+        // The full animation is now finished.
+        if (ufoMovement != null)
+        {
+            ufoMovement.UnlockMovement();
+        }
     }
 
     public void CancelAbductionForGameOver()
@@ -181,5 +222,8 @@ public class TractorBeam : MonoBehaviour
         isAbducting = false;
 
         beamVisual.SetActive(false);
+
+        // Do not unlock movement here,
+        // because the game is already over.
     }
 }
