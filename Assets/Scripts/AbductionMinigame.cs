@@ -146,19 +146,22 @@ public class AbductionMinigame : MonoBehaviour
     }
 
     bool IsMarkerInside(RectTransform zone)
-    {
-        Vector3[] corners = new Vector3[4];
+{
+    Vector3[] markerCorners = new Vector3[4];
+    marker.GetWorldCorners(markerCorners);
 
-        zone.GetWorldCorners(corners);
+    Vector3[] zoneCorners = new Vector3[4];
+    zone.GetWorldCorners(zoneCorners);
 
-        float leftEdge = corners[0].x;
-        float rightEdge = corners[2].x;
+    float markerLeft = markerCorners[0].x;
+    float markerRight = markerCorners[2].x;
 
-        float markerX = marker.position.x;
+    float zoneLeft = zoneCorners[0].x;
+    float zoneRight = zoneCorners[2].x;
 
-        return markerX >= leftEdge &&
-               markerX <= rightEdge;
-    }
+    return markerRight >= zoneLeft &&
+           markerLeft <= zoneRight;
+}
 
     public void CancelMinigame()
     {
