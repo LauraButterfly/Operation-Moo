@@ -97,10 +97,40 @@ public class TractorBeam : MonoBehaviour
         CowBehavior cow =
             other.GetComponent<CowBehavior>();
 
-        if (cow != null)
+        // Only select cows that are not stunned.
+        if (cow != null && !cow.IsStunned)
         {
             cowInBeam = cow;
             Debug.Log("Cow entered beam area!");
+        }
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        CowBehavior cow =
+            other.GetComponent<CowBehavior>();
+
+        if (cow == null)
+            return;
+
+        // If the cow is stunned, make sure it cannot stay selected.
+        if (cow.IsStunned)
+        {
+            if (cow == cowInBeam)
+            {
+                cowInBeam = null;
+            }
+
+            return;
+        }
+
+        // If the stun has ended while the cow is still inside the beam area,
+        // allow it to become selectable again.
+        if (cowInBeam == null &&
+            !minigameActive &&
+            !isAbducting)
+        {
+            cowInBeam = cow;
         }
     }
 
@@ -123,6 +153,7 @@ public class TractorBeam : MonoBehaviour
     void ActivateBeam()
     {
         if (cowInBeam != null &&
+            !cowInBeam.IsStunned &&
             !isAbducting &&
             !minigameActive)
         {
@@ -156,7 +187,6 @@ public class TractorBeam : MonoBehaviour
                 "Minigame succeeded, but there is no cow assigned!"
             );
 
-            // Safety fallback.
             if (ufoMovement != null)
             {
                 ufoMovement.UnlockMovement();
@@ -174,7 +204,6 @@ public class TractorBeam : MonoBehaviour
         isAbducting = true;
 
         // Do NOT unlock UFO movement here.
-        // It stays locked until CompleteAbduction().
     }
 
     public void MinigameFailed()
@@ -185,12 +214,14 @@ public class TractorBeam : MonoBehaviour
 
         if (cowInBeam != null)
         {
-            cowInBeam.StopAbduction();
+            // Put the cow into its stunned state.
+            cowInBeam.Stun();
         }
 
+        // Remove it as the active target while stunned.
         cowInBeam = null;
 
-        // Failure ends the sequence, so movement can resume.
+        // The UFO can move again immediately.
         if (ufoMovement != null)
         {
             ufoMovement.UnlockMovement();
@@ -209,7 +240,6 @@ public class TractorBeam : MonoBehaviour
 
         beamVisual.SetActive(false);
 
-        // The full animation is now finished.
         if (ufoMovement != null)
         {
             ufoMovement.UnlockMovement();
