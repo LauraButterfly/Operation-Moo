@@ -10568,10 +10568,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.25, y: -0.36}
-      - {x: -0.25, y: -0.36}
-      - {x: -0.5, y: -1.5}
-      - {x: 0.5, y: -1.5}
+    - - {x: 0.3756976, y: -0.36369705}
+      - {x: -0.3756976, y: -0.36}
+      - {x: -0.8696989, y: -1.5000001}
+      - {x: 0.8623047, y: -1.511091}
   m_UseDelaunayMesh: 1
 --- !u!114 &210120459
 MonoBehaviour:
@@ -11858,7 +11858,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -13428,6 +13428,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1182199745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1182199747}
+  - component: {fileID: 1182199746}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1182199746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182199745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 6779878a6310089499da938539e6682a, type: 2}
+--- !u!4 &1182199747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182199745}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.4372838, y: -0.52374655, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1205291363
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13659,7 +13708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 41, y: -70}
+  m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1271501881
@@ -14846,7 +14895,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: eb6b63da45101db48b819034ed3ca017, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14869,7 +14918,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 1395100994128701649, guid: 478dd2ef5eb577b4ea39b3adf44792d2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -14888,8 +14937,8 @@ Transform:
   m_GameObject: {fileID: 1684947849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.75, y: 2.39, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 210120457}
@@ -15405,8 +15454,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.0032500029, y: 0.019950002, z: 0}
-    m_Extent: {x: 0.83995, y: 0.63895, z: 0}
+    m_Center: {x: 0.044149995, y: 0.018550009, z: 0}
+    m_Extent: {x: 1.21505, y: 0.64055, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -15417,10 +15466,11 @@ MonoBehaviour:
   m_ShapeLightFalloffSize: 0.33
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: -0.1579765, y: 0.3299094, z: 0}
-  - {x: -0.50715667, y: -0.28560197, z: 0}
-  - {x: 0.5164062, y: -0.28987518, z: 0}
-  - {x: 0.15476313, y: 0.3237832, z: 0}
+  - {x: -0.23068719, y: 0.32990944, z: 0}
+  - {x: -0.84321266, y: -0.20755903, z: 0}
+  - {x: 0.03176544, y: -0.29431298, z: 0}
+  - {x: 0.88948315, y: -0.20710938, z: 0}
+  - {x: 0.23526415, y: 0.32845372, z: 0}
 --- !u!1 &1813415697
 GameObject:
   m_ObjectHideFlags: 0
@@ -20787,3 +20837,4 @@ SceneRoots:
   - {fileID: 1128366420}
   - {fileID: 84879805}
   - {fileID: 513825545}
+  - {fileID: 1182199747}
