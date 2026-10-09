@@ -49,4 +49,10 @@ public class GameTimer : MonoBehaviour
 
         gameOverManager.ShowGameOver();
     }
+
+    public void AddTime(float amount)
+{
+    timeRemaining += amount;
+    UpdateTimerText();
+}
 }

@@ -7,6 +7,8 @@ public class GameOverManager : MonoBehaviour
     public GameObject gameOverPanel;
     public TMP_Text finalScoreText;
 
+    public TMP_Text finalHighScoreText;
+
     public ScoreManager scoreManager;
 
     public AbductionMinigame minigame;
@@ -29,6 +31,9 @@ public class GameOverManager : MonoBehaviour
 
         finalScoreText.text =
             "Final Score: " + scoreManager.CurrentScore;
+
+        finalHighScoreText.text =
+            "High Score: " + scoreManager.HighScore;
 
         Time.timeScale = 0f;
     }

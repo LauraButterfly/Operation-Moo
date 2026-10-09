@@ -11,6 +11,8 @@ public class AbductionMinigame : MonoBehaviour
     public TractorBeam tractorBeam;
     public ScoreManager scoreManager;
 
+    public GameTimer gameTimer;
+
     public float markerSpeed = 200f;
 
     private bool isRunning;
@@ -123,6 +125,9 @@ public class AbductionMinigame : MonoBehaviour
             Debug.Log("PERFECT - GREEN");
 
             scoreManager.AddScore(100);
+
+            //Add 5 seconds to the timer ofr perfect hit
+            gameTimer.AddTime(5f);
 
             EndMinigame();
             tractorBeam.MinigameSuccess();
