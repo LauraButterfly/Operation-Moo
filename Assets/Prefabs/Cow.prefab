@@ -324,7 +324,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1604644640301926670, guid: b626d7fecd5f3444b959f1ded7f05a37, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -450,7 +450,7 @@ MonoBehaviour:
   maxIdleTime: 4
   minSleepTime: 4
   maxSleepTime: 8
-  sleepChance: 0.15
+  sleepChance: 0.1
   stunDuration: 5
   stunEffect: {fileID: 1014360102532289061}
 --- !u!1 &8659534702442266377
