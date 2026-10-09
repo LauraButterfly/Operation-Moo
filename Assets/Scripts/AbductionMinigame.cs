@@ -11,6 +11,8 @@ public class AbductionMinigame : MonoBehaviour
     public TractorBeam tractorBeam;
     public ScoreManager scoreManager;
 
+    public FeedbackManager feedbackManager;
+
     public GameTimer gameTimer;
 
     public float markerSpeed = 200f;
@@ -129,6 +131,10 @@ public class AbductionMinigame : MonoBehaviour
             //Add 5 seconds to the timer ofr perfect hit
             gameTimer.AddTime(5f);
 
+            feedbackManager.ShowFeedback(
+            "PERFECT!\n+100 POINTS\n+5 SECONDS"
+        );
+
             EndMinigame();
             tractorBeam.MinigameSuccess();
         }
@@ -138,6 +144,10 @@ public class AbductionMinigame : MonoBehaviour
 
             scoreManager.AddScore(50);
 
+            feedbackManager.ShowFeedback(
+            "GOOD!\n+50 POINTS"
+        );
+
             EndMinigame();
             tractorBeam.MinigameSuccess();
         }
@@ -145,28 +155,32 @@ public class AbductionMinigame : MonoBehaviour
         {
             Debug.Log("MISS - OUTSIDE TARGET");
 
+            feedbackManager.ShowFeedback(
+            "MISS!"
+        );
+
             EndMinigame();
             tractorBeam.MinigameFailed();
         }
     }
 
     bool IsMarkerInside(RectTransform zone)
-{
-    Vector3[] markerCorners = new Vector3[4];
-    marker.GetWorldCorners(markerCorners);
+    {
+        Vector3[] markerCorners = new Vector3[4];
+        marker.GetWorldCorners(markerCorners);
 
-    Vector3[] zoneCorners = new Vector3[4];
-    zone.GetWorldCorners(zoneCorners);
+        Vector3[] zoneCorners = new Vector3[4];
+        zone.GetWorldCorners(zoneCorners);
 
-    float markerLeft = markerCorners[0].x;
-    float markerRight = markerCorners[2].x;
+        float markerLeft = markerCorners[0].x;
+        float markerRight = markerCorners[2].x;
 
-    float zoneLeft = zoneCorners[0].x;
-    float zoneRight = zoneCorners[2].x;
+        float zoneLeft = zoneCorners[0].x;
+        float zoneRight = zoneCorners[2].x;
 
-    return markerRight >= zoneLeft &&
-           markerLeft <= zoneRight;
-}
+        return markerRight >= zoneLeft &&
+               markerLeft <= zoneRight;
+    }
 
     public void CancelMinigame()
     {
