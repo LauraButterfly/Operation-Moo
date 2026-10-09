@@ -10,7 +10,7 @@ public class GameTimer : MonoBehaviour
     public float gameTime = 60f;
 
     private float timeRemaining;
-    private bool timerRunning = true;
+    private bool timerRunning = false;
 
     void Start()
     {
@@ -36,6 +36,11 @@ public class GameTimer : MonoBehaviour
         UpdateTimerText();
     }
 
+    public void SetTimerRunning(bool running)
+{
+    timerRunning = running;
+}
+
     void UpdateTimerText()
     {
         int seconds = Mathf.CeilToInt(timeRemaining);
@@ -51,8 +56,8 @@ public class GameTimer : MonoBehaviour
     }
 
     public void AddTime(float amount)
-{
-    timeRemaining += amount;
-    UpdateTimerText();
-}
+    {
+        timeRemaining += amount;
+        UpdateTimerText();
+    }
 }
