@@ -16,6 +16,9 @@ public class TractorBeam : MonoBehaviour
     // Reference to the UFO movement script.
     public UfoMovement ufoMovement;
 
+    // Reference to the SFX manager.
+    public SFXManager sfxManager;
+
     // Final point the cow moves toward.
     public Transform abductionTarget;
 
@@ -181,6 +184,12 @@ public class TractorBeam : MonoBehaviour
     {
         minigameActive = false;
 
+        // Play the successful abduction sound.
+        if (sfxManager != null)
+        {
+            sfxManager.PlayAbductionSound();
+        }
+
         if (cowInBeam == null)
         {
             Debug.LogError(
@@ -212,16 +221,19 @@ public class TractorBeam : MonoBehaviour
 
         beamVisual.SetActive(false);
 
+        // Play the failure sound.
+        if (sfxManager != null)
+        {
+            sfxManager.PlayFailSound();
+        }
+
         if (cowInBeam != null)
         {
-            // Put the cow into its stunned state.
             cowInBeam.Stun();
         }
 
-        // Remove it as the active target while stunned.
         cowInBeam = null;
 
-        // The UFO can move again immediately.
         if (ufoMovement != null)
         {
             ufoMovement.UnlockMovement();
@@ -232,7 +244,12 @@ public class TractorBeam : MonoBehaviour
     {
         Debug.Log("Cow successfully abducted!");
 
-        // Remove the cow once it reaches the UFO.
+        // Stop aduction sound when the cow reaches the UFO.
+        if (sfxManager != null)
+        {
+            sfxManager.StopAbductionSound();
+        }
+
         Destroy(cowInBeam.gameObject);
 
         cowInBeam = null;
