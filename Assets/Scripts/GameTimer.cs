@@ -9,6 +9,12 @@ public class GameTimer : MonoBehaviour
 
     public float gameTime = 60f;
 
+    public SFXManager sfxManager;
+
+    public int warningStartTime = 5;
+
+    private int lastWarningSecond = -1;
+
     private float timeRemaining;
     private bool timerRunning = false;
 
@@ -25,6 +31,20 @@ public class GameTimer : MonoBehaviour
 
         timeRemaining -= Time.deltaTime;
 
+        int currentSecond = Mathf.CeilToInt(timeRemaining);
+
+        if (currentSecond <= warningStartTime &&
+            currentSecond > 0 &&
+            currentSecond != lastWarningSecond)
+        {
+            lastWarningSecond = currentSecond;
+
+            if (sfxManager != null)
+            {
+                sfxManager.PlayTimerWarningSound();
+            }
+        }
+
         if (timeRemaining <= 0f)
         {
             timeRemaining = 0f;
@@ -37,9 +57,9 @@ public class GameTimer : MonoBehaviour
     }
 
     public void SetTimerRunning(bool running)
-{
-    timerRunning = running;
-}
+    {
+        timerRunning = running;
+    }
 
     void UpdateTimerText()
     {

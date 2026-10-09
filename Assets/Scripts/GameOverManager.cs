@@ -48,6 +48,14 @@ public class GameOverManager : MonoBehaviour
         );
     }
 
+    public void ReturnToMainMenu()
+    {
+        // Always restore normal time before returning to main menu.
+        Time.timeScale = 1f;
+
+        SceneManager.LoadScene("MainMenu");
+    }
+
     public void QuitGame()
     {
         // This works in a built game.

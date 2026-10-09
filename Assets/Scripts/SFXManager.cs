@@ -9,6 +9,8 @@ public class SFXManager : MonoBehaviour
 
     public AudioClip buttonClickSound;
 
+    public AudioClip timerWarningSound;
+
     public void PlayFailSound()
     {
         audioSource.PlayOneShot(failSound);
@@ -28,4 +30,9 @@ public class SFXManager : MonoBehaviour
     {
         audioSource.PlayOneShot(buttonClickSound);
     }
+
+    public void PlayTimerWarningSound()
+{
+    audioSource.PlayOneShot(timerWarningSound);
+}
 }
