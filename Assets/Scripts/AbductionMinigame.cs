@@ -128,11 +128,11 @@ public class AbductionMinigame : MonoBehaviour
 
             scoreManager.AddScore(100);
 
-            //Add 5 seconds to the timer ofr perfect hit
-            gameTimer.AddTime(5f);
+            //Add 3 seconds to the timer ofr perfect hit
+            gameTimer.AddTime(3f);
 
             feedbackManager.ShowFeedback(
-            "PERFECT!\n+100 POINTS\n+5 SECONDS"
+            "PERFECT!\n+100 POINTS\n+3 SECONDS"
         );
 
             EndMinigame();
